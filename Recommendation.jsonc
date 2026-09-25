@@ -1,0 +1,60 @@
+{
+  "name": "Recommendation",
+  "type": "object",
+  "properties": {
+    "worker_profile_id": {
+      "type": "string"
+    },
+    "role_id": {
+      "type": "string"
+    },
+    "organization_id": {
+      "type": "string"
+    },
+    "present_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "assessment_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "missing_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "readiness": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "assess",
+        "upskill",
+        "explore"
+      ]
+    },
+    "next_action_title": {
+      "type": "string"
+    },
+    "next_action_worker": {
+      "type": "string"
+    },
+    "next_action_employer": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "worker_profile_id",
+    "role_id",
+    "readiness"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "LearningResource",
+  "type": "object",
+  "properties": {
+    "skill_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "Micro-lesson",
+        "Video",
+        "Interactive practice",
+        "Scenario",
+        "Cohort programme",
+        "Safety module",
+        "Audio lessons",
+        "Guided practice",
+        "Hands-on practice"
+      ]
+    },
+    "duration_minutes": {
+      "type": "number"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "skill_id",
+    "title"
+  ]
+}

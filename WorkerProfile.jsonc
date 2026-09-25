@@ -1,0 +1,107 @@
+{
+  "name": "WorkerProfile",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "hi",
+        "ta",
+        "bn",
+        "mr",
+        "te"
+      ],
+      "default": "en"
+    },
+    "interaction_mode": {
+      "type": "string",
+      "enum": [
+        "form",
+        "voice",
+        "visual"
+      ],
+      "default": "voice"
+    },
+    "current_role": {
+      "type": "string"
+    },
+    "current_employer": {
+      "type": "string"
+    },
+    "years_experience": {
+      "type": "number"
+    },
+    "work_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "employer": {
+            "type": "string"
+          },
+          "duration_months": {
+            "type": "number"
+          },
+          "tasks": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "form",
+              "voice"
+            ]
+          }
+        }
+      }
+    },
+    "consent": {
+      "type": "object",
+      "properties": {
+        "visible_to_employers": {
+          "type": "boolean",
+          "default": true
+        },
+        "share_evidence": {
+          "type": "boolean",
+          "default": true
+        },
+        "share_assessments": {
+          "type": "boolean",
+          "default": true
+        },
+        "share_work_history": {
+          "type": "boolean",
+          "default": true
+        },
+        "share_contact": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "is_demo": {
+      "type": "boolean",
+      "default": false
+    },
+    "demo_key": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

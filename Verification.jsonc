@@ -1,0 +1,58 @@
+{
+  "name": "Verification",
+  "type": "object",
+  "properties": {
+    "evidence_id": {
+      "type": "string"
+    },
+    "worker_profile_id": {
+      "type": "string"
+    },
+    "verifier_name": {
+      "type": "string"
+    },
+    "verifier_role": {
+      "type": "string"
+    },
+    "verifier_contact": {
+      "type": "string"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "sms_link",
+        "phone_call",
+        "in_person",
+        "platform_api"
+      ]
+    },
+    "skills_confirmed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "rejected",
+        "expired"
+      ],
+      "default": "pending"
+    },
+    "confirmed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "evidence_id",
+    "worker_profile_id",
+    "status"
+  ]
+}

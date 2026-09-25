@@ -1,0 +1,119 @@
+{
+  "name": "Evidence",
+  "type": "object",
+  "properties": {
+    "worker_profile_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "evidence_type": {
+      "type": "string",
+      "enum": [
+        "screenshot",
+        "document",
+        "certificate",
+        "supervisor_confirmation",
+        "peer_confirmation",
+        "work_history",
+        "scenario",
+        "platform_data"
+      ]
+    },
+    "evidence_state": {
+      "type": "string",
+      "enum": [
+        "self_declared",
+        "document_supported",
+        "verified",
+        "demonstrated",
+        "platform_verified"
+      ],
+      "default": "document_supported"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "not_applicable",
+        "pending",
+        "confirmed"
+      ],
+      "default": "not_applicable"
+    },
+    "file_uri": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "self",
+        "uploaded",
+        "supervisor",
+        "peer",
+        "scenario",
+        "platform",
+        "work_history"
+      ]
+    },
+    "extracted_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "extraction_notes": {
+      "type": "string"
+    },
+    "extracted_data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "worker_declared": {
+      "type": "string"
+    },
+    "verification_flag": {
+      "type": "string",
+      "enum": [
+        "none",
+        "consistent",
+        "minor_discrepancy",
+        "pending"
+      ],
+      "default": "none"
+    },
+    "caution": {
+      "type": "string"
+    },
+    "verifier_name": {
+      "type": "string"
+    },
+    "verifier_role": {
+      "type": "string"
+    },
+    "verifier_contact": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "worker_profile_id",
+    "title",
+    "evidence_type"
+  ]
+}

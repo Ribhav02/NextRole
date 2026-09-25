@@ -1,0 +1,71 @@
+{
+  "name": "Role",
+  "type": "object",
+  "properties": {
+    "organization_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "shift": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "draft",
+        "closed"
+      ],
+      "default": "open"
+    },
+    "required_skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "skill": {
+            "type": "string"
+          },
+          "importance": {
+            "type": "string",
+            "enum": [
+              "core",
+              "preferred"
+            ]
+          },
+          "min_evidence": {
+            "type": "string",
+            "enum": [
+              "self_declared",
+              "document_supported",
+              "verified",
+              "demonstrated",
+              "platform_verified"
+            ]
+          }
+        }
+      }
+    },
+    "demo_key": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "organization_id",
+    "title"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "EvidenceSkillRelationship",
+  "type": "object",
+  "properties": {
+    "evidence_id": {
+      "type": "string"
+    },
+    "skill_id": {
+      "type": "string"
+    },
+    "worker_profile_id": {
+      "type": "string"
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "extraction_method": {
+      "type": "string",
+      "enum": [
+        "ai",
+        "keyword",
+        "worker_confirmed",
+        "supervisor"
+      ]
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "evidence_id",
+    "skill_id",
+    "worker_profile_id"
+  ]
+}

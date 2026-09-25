@@ -1,0 +1,33 @@
+{
+  "name": "MobilityDecision",
+  "type": "object",
+  "properties": {
+    "worker_profile_id": {
+      "type": "string"
+    },
+    "role_id": {
+      "type": "string"
+    },
+    "organization_id": {
+      "type": "string"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "shortlist",
+        "assign_assessment",
+        "assign_learning",
+        "offer_move",
+        "not_now"
+      ]
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "worker_profile_id",
+    "role_id",
+    "decision"
+  ]
+}

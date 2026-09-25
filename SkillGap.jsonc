@@ -1,0 +1,56 @@
+{
+  "name": "SkillGap",
+  "type": "object",
+  "properties": {
+    "worker_profile_id": {
+      "type": "string"
+    },
+    "role_id": {
+      "type": "string"
+    },
+    "skill_id": {
+      "type": "string"
+    },
+    "gap_type": {
+      "type": "string",
+      "enum": [
+        "missing",
+        "assessment_needed"
+      ]
+    },
+    "importance": {
+      "type": "string",
+      "enum": [
+        "core",
+        "preferred"
+      ]
+    },
+    "suggested_action": {
+      "type": "string",
+      "enum": [
+        "learn",
+        "assess",
+        "verify"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_progress",
+        "closed"
+      ],
+      "default": "open"
+    },
+    "closed_at": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "worker_profile_id",
+    "role_id",
+    "skill_id",
+    "gap_type"
+  ]
+}

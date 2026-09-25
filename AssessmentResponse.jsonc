@@ -1,0 +1,62 @@
+{
+  "name": "AssessmentResponse",
+  "type": "object",
+  "properties": {
+    "assessment_id": {
+      "type": "string"
+    },
+    "worker_profile_id": {
+      "type": "string"
+    },
+    "scenario_id": {
+      "type": "string"
+    },
+    "response_text": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "text",
+        "voice"
+      ],
+      "default": "text"
+    },
+    "analyzed": {
+      "type": "boolean",
+      "default": false
+    },
+    "demonstrated_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "partial_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "strengths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "improvements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "feedback": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "assessment_id",
+    "worker_profile_id",
+    "scenario_id"
+  ]
+}

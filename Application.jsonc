@@ -1,0 +1,38 @@
+{
+  "name": "Application",
+  "type": "object",
+  "properties": {
+    "worker_profile_id": {
+      "type": "string"
+    },
+    "role_id": {
+      "type": "string"
+    },
+    "organization_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "expressed",
+        "viewed",
+        "shortlisted",
+        "accepted",
+        "rejected",
+        "withdrawn"
+      ],
+      "default": "expressed"
+    },
+    "worker_message": {
+      "type": "string"
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "worker_profile_id",
+    "role_id",
+    "status"
+  ]
+}
