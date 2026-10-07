@@ -118,6 +118,8 @@ model Organization {
   users User[]
   roles Role[]
   jobs Job[]
+  consents Consent[]
+  employmentRecords EmploymentRecord[]
   managerReviews ManagerReview[]
   companyFeedback CompanyFeedback[]
 }
