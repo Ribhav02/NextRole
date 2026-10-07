@@ -1,4 +1,5 @@
 import express from "express";
+import path from "node:path";
 import cors from "cors";
 
 import authRoutes from "./routes/auth.routes.js";
@@ -23,6 +24,7 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json({ limit: "10mb" }));
+app.use("/uploads", express.static(path.resolve(process.cwd(), "storage/uploads")));
 
 app.get("/api/health", (_req, res) => {
   res.json({ success: true, service: "nextrole-backend", status: "healthy" });
