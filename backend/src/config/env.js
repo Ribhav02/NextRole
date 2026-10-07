@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-
 dotenv.config();
 
 export const env = {
@@ -7,8 +6,7 @@ export const env = {
   databaseUrl: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
   clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
+  bhashiniApiKey: process.env.BHASHINI_API_KEY || "",
 };
 
-if (!env.jwtSecret) {
-  console.warn("JWT_SECRET is not configured.");
-}
+if (!env.jwtSecret) console.warn("JWT_SECRET is not configured.");
