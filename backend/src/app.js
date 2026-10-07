@@ -12,6 +12,9 @@ import companyRoutes from "./routes/company.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import documentRoutes from "./routes/document.routes.js";
 import voiceRoutes from "./routes/voice.routes.js";
+import interviewRoutes from "./routes/interview.routes.js";
+import candidateRoutes from "./routes/candidate.routes.js";
+import preferencesRoutes from "./routes/preferences.routes.js";
 
 const app = express();
 
@@ -36,6 +39,9 @@ app.use("/api/company", companyRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/voice", voiceRoutes);
+app.use("/api/interviews", interviewRoutes);
+app.use("/api/candidates", candidateRoutes);
+app.use("/api/preferences", preferencesRoutes);
 
 app.use((req, res) => res.status(404).json({
   success: false,
