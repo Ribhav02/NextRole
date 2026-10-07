@@ -1,0 +1,3 @@
+# Shared
+
+Code/contracts used by both frontend and backend. Keep this dependency-free where possible.
