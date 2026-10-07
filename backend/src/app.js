@@ -6,6 +6,12 @@ import workHistoryRoutes from "./routes/workHistory.routes.js";
 import evidenceRoutes from "./routes/evidence.routes.js";
 import skillRoutes from "./routes/skill.routes.js";
 import intelligenceRoutes from "./routes/intelligence.routes.js";
+import jobRoutes from "./routes/job.routes.js";
+import consentRoutes from "./routes/consent.routes.js";
+import companyRoutes from "./routes/company.routes.js";
+import messageRoutes from "./routes/message.routes.js";
+import documentRoutes from "./routes/document.routes.js";
+import voiceRoutes from "./routes/voice.routes.js";
 
 const app = express();
 
@@ -24,6 +30,12 @@ app.use("/api/work-history", workHistoryRoutes);
 app.use("/api/evidence", evidenceRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/intelligence", intelligenceRoutes);
+app.use("/api/jobs", jobRoutes);
+app.use("/api/consent", consentRoutes);
+app.use("/api/company", companyRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/documents", documentRoutes);
+app.use("/api/voice", voiceRoutes);
 
 app.use((req, res) => res.status(404).json({
   success: false,
