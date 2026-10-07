@@ -1,0 +1,537 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  WORKER
+  EMPLOYER
+  ADMIN
+}
+
+enum EvidenceType {
+  DOCUMENT
+  WORK_HISTORY
+  ASSESSMENT
+  COMPANY_DATA
+  MANAGER_REVIEW
+  PLATFORM
+  OTHER
+}
+
+enum EvidenceState {
+  SELF_DECLARED
+  DOCUMENT_SUPPORTED
+  VERIFIED
+  DEMONSTRATED
+  PLATFORM_VERIFIED
+}
+
+enum ConsentStatus {
+  PENDING
+  GRANTED
+  REVOKED
+}
+
+enum JobSourceType {
+  EMPLOYER_POST
+  EXTERNAL
+}
+
+enum JobStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  CLOSED
+}
+
+enum ApplicationStatus {
+  SAVED
+  APPLIED
+  SHORTLISTED
+  INTERVIEW_REQUESTED
+  HIRED
+  REJECTED
+}
+
+enum MessageType {
+  TEXT
+  SYSTEM
+  INTERVIEW_REQUEST
+  HIRING_REQUEST
+}
+
+model User {
+  id             String   @id @default(cuid())
+  name           String
+  email          String   @unique
+  passwordHash   String
+  role           UserRole @default(WORKER)
+  phone          String?
+  locationText   String?
+  latitude       Float?
+  longitude      Float?
+  locationGranted Boolean @default(false)
+  organizationId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  workHistory WorkHistory[]
+  employmentRecords EmploymentRecord[]
+  evidence Evidence[]
+  workerSkills WorkerSkill[]
+  assessments AssessmentResponse[]
+  applications Application[]
+  workerPreferences WorkerPreference?
+  locationPreference LocationPreference?
+  workerConsents Consent[]
+  sentMessages Message[] @relation("SentMessages")
+  conversations ConversationParticipant[]
+  managerReviewsGiven ManagerReview[] @relation("ManagerReviewer")
+  managerReviewsReceived ManagerReview[] @relation("ManagerWorker")
+  companyFeedbackReceived CompanyFeedback[] @relation("FeedbackWorker")
+  jobsPosted Job[]
+  interviewRequestsSent InterviewRequest[] @relation("InterviewSender")
+  interviewRequestsReceived InterviewRequest[] @relation("InterviewReceiver")
+  documents Document[]
+  voiceSessions VoiceSession[]
+  mobilityDecisions MobilityDecision[]
+}
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  industry    String?
+  website     String?
+  locationText String?
+  latitude    Float?
+  longitude   Float?
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users User[]
+  roles Role[]
+  jobs Job[]
+  managerReviews ManagerReview[]
+  companyFeedback CompanyFeedback[]
+}
+
+model WorkerPreference {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  desiredJobTypes Json
+  preferredTitles Json
+  preferredIndustries Json
+  willingToRelocate Boolean @default(false)
+  remotePreferred Boolean @default(false)
+  minSalary       Float?
+  maxDistanceKm   Float @default(100)
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LocationPreference {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  radius50Km  Boolean  @default(true)
+  radius100Km Boolean  @default(true)
+  farAway     Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Consent {
+  id             String @id @default(cuid())
+  workerId       String
+  organizationId String?
+  scope          String
+  status         ConsentStatus @default(PENDING)
+  grantedAt      DateTime?
+  revokedAt      DateTime?
+  createdAt      DateTime @default(now())
+
+  worker User @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  companyFeedback CompanyFeedback[]
+  managerReviews ManagerReview[]
+  employmentRecords EmploymentRecord[]
+}
+
+model EmploymentRecord {
+  id             String @id @default(cuid())
+  workerId       String
+  organizationId String
+  consentId      String?
+  jobTitle       String
+  startDate      DateTime
+  endDate        DateTime?
+  isCurrent      Boolean @default(false)
+  source         String @default("worker")
+  createdAt      DateTime @default(now())
+
+  worker User @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  consent Consent? @relation(fields: [consentId], references: [id], onDelete: SetNull)
+}
+
+model WorkHistory {
+  id             String @id @default(cuid())
+  userId         String
+  role           String
+  employer       String?
+  durationMonths Int?
+  tasks          Json
+  source         String @default("manual")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Document {
+  id          String @id @default(cuid())
+  userId      String
+  fileName    String
+  mimeType    String
+  storageUrl  String
+  documentType String?
+  extractedText String?
+  extractionStatus String @default("PENDING")
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  evidence Evidence?
+}
+
+model Evidence {
+  id             String @id @default(cuid())
+  userId         String
+  documentId     String? @unique
+  title          String
+  description    String?
+  type           EvidenceType @default(OTHER)
+  state          EvidenceState @default(SELF_DECLARED)
+  sourceUrl      String?
+  metadata       Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  skillRelationships EvidenceSkillRelationship[]
+  verification Verification?
+}
+
+model Skill {
+  id          String @id @default(cuid())
+  slug        String @unique
+  name        String
+  category    String
+  description String?
+  createdAt   DateTime @default(now())
+
+  workerSkills WorkerSkill[]
+  evidenceRelationships EvidenceSkillRelationship[]
+  roleRequirements RoleSkillRequirement[]
+  skillGaps SkillGap[]
+}
+
+model WorkerSkill {
+  id            String @id @default(cuid())
+  userId        String
+  skillId       String
+  score         Float @default(0)
+  evidenceState EvidenceState @default(SELF_DECLARED)
+  confidence    Float @default(0)
+  updatedAt     DateTime @updatedAt
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillId])
+}
+
+model EvidenceSkillRelationship {
+  id         String @id @default(cuid())
+  evidenceId String
+  skillId    String
+  confidence Float @default(0)
+
+  evidence Evidence @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([evidenceId, skillId])
+}
+
+model ManagerReview {
+  id             String @id @default(cuid())
+  workerId       String
+  organizationId String
+  managerId      String?
+  consentId      String?
+  title          String
+  summary        String?
+  overallScore   Float?
+  strengths      Json
+  improvements   Json
+  skillScores    Json
+  payload        Json?
+  createdAt      DateTime @default(now())
+
+  worker User @relation("ManagerWorker", fields: [workerId], references: [id], onDelete: Cascade)
+  manager User? @relation("ManagerReviewer", fields: [managerId], references: [id], onDelete: SetNull)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  consent Consent? @relation(fields: [consentId], references: [id], onDelete: SetNull)
+}
+
+model CompanyFeedback {
+  id             String @id @default(cuid())
+  workerId       String
+  organizationId String
+  consentId      String?
+  sourceType     String
+  title          String
+  summary        String?
+  overallScore   Float?
+  skillScores    Json
+  payload        Json?
+  createdAt      DateTime @default(now())
+
+  worker User @relation("FeedbackWorker", fields: [workerId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  consent Consent? @relation(fields: [consentId], references: [id], onDelete: SetNull)
+}
+
+model Role {
+  id             String @id @default(cuid())
+  organizationId String
+  title          String
+  description    String?
+  locationText   String?
+  latitude       Float?
+  longitude      Float?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  skillRequirements RoleSkillRequirement[]
+  applications Application[]
+  recommendations Recommendation[]
+  jobs Job[]
+  skillGaps SkillGap[]
+  mobilityDecisions MobilityDecision[]
+}
+
+model RoleSkillRequirement {
+  id            String @id @default(cuid())
+  roleId        String
+  skillId       String
+  requiredScore Float @default(0)
+  minEvidence   EvidenceState @default(DOCUMENT_SUPPORTED)
+
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, skillId])
+}
+
+model Job {
+  id             String @id @default(cuid())
+  organizationId String?
+  roleId         String?
+  sourceType     JobSourceType
+  externalSource String?
+  externalId     String?
+  title          String
+  description    String?
+  locationText   String?
+  latitude       Float?
+  longitude      Float?
+  salaryMin      Float?
+  salaryMax      Float?
+  status         JobStatus @default(ACTIVE)
+  applyUrl       String?
+  rawPayload     Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  role Role? @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  applications Application[]
+}
+
+model SkillGap {
+  id            String @id @default(cuid())
+  userId        String
+  roleId        String?
+  skillId       String
+  currentScore  Float @default(0)
+  requiredScore Float @default(0)
+  gap           Float @default(0)
+  createdAt     DateTime @default(now())
+
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  role Role? @relation(fields: [roleId], references: [id], onDelete: Cascade)
+}
+
+model Assessment {
+  id          String @id @default(cuid())
+  title       String
+  description String?
+  scenarioKey String?
+  targetSkills Json
+  rubric      String?
+  createdAt   DateTime @default(now())
+
+  responses AssessmentResponse[]
+}
+
+model AssessmentResponse {
+  id                 String @id @default(cuid())
+  assessmentId       String
+  userId             String
+  response           String
+  score              Float?
+  demonstratedSkills Json
+  partialSkills      Json
+  analysis           Json?
+  createdAt           DateTime @default(now())
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Application {
+  id        String @id @default(cuid())
+  userId    String
+  roleId    String
+  jobId     String?
+  status    ApplicationStatus @default(APPLIED)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  job Job? @relation(fields: [jobId], references: [id], onDelete: SetNull)
+}
+
+model Recommendation {
+  id        String @id @default(cuid())
+  userId    String
+  roleId    String
+  score     Float
+  readiness String
+  distanceKm Float?
+  reasons   Json
+  createdAt DateTime @default(now())
+
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+}
+
+model LearningResource {
+  id          String @id @default(cuid())
+  title       String
+  description String?
+  provider    String?
+  url         String?
+  skillSlug   String?
+  createdAt   DateTime @default(now())
+}
+
+model Verification {
+  id          String @id @default(cuid())
+  evidenceId String @unique
+  verifierId String?
+  status     String @default("PENDING")
+  verifiedAt DateTime?
+
+  evidence Evidence @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
+  id        String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants ConversationParticipant[]
+  messages Message[]
+}
+
+model ConversationParticipant {
+  id             String @id @default(cuid())
+  conversationId String
+  userId         String
+  joinedAt       DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+}
+
+model Message {
+  id             String @id @default(cuid())
+  conversationId String
+  senderId       String
+  type           MessageType @default(TEXT)
+  body           String
+  metadata       Json?
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+}
+
+model InterviewRequest {
+  id         String @id @default(cuid())
+  employerId String
+  workerId   String
+  jobId      String?
+  message    String?
+  status     String @default("PENDING")
+  proposedAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  employer User @relation("InterviewSender", fields: [employerId], references: [id], onDelete: Cascade)
+  worker User @relation("InterviewReceiver", fields: [workerId], references: [id], onDelete: Cascade)
+}
+
+model VoiceSession {
+  id             String @id @default(cuid())
+  userId         String
+  sourceLanguage String?
+  targetLanguage String?
+  transcript     String?
+  translatedText String?
+  audioUrl       String?
+  provider       String @default("bhashini")
+  status         String @default("PENDING")
+  metadata       Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MobilityDecision {
+  id        String @id @default(cuid())
+  userId    String
+  roleId    String
+  decision  String
+  rationale Json
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+}
